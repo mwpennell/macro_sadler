@@ -25,20 +25,19 @@ for(i in 1:length(tt)){
   {emp.phylogs[[i]]<-tree} else {"NA"}
   }
 emp.phylogs<-emp.phylogs[!sapply(emp.phylogs, is.null)] 
-head(emp.phylogs)
 
-summary.tree.results2<-read.csv("output/summary_tree_results.csv",header=T,row.names = 1)
-summary.tree.results2<-subset(summary.tree.results2, summary.tree.results2$ntips>=10)
+summary_tree_results<-read.csv("output/summary_tree_results.csv",header=T,row.names = 1)
+summary_tree_results<-subset(summary_tree_results, summary_tree_results$ntips>=10)
 
 slope<-c()
 aicw_t_model<-c()
 res<-c()
 for(i in 1:length(emp.phylogs)){
-  slope[i]<-compare_bd_t(emp.phylogs[[i]],summary.tree.results2$prop.samp[i])$slope_est
-  aicw_t_model[i]<-compare_bd_t(emp.phylogs[[i]],summary.tree.results2$prop.samp[i])$aicw_t_model
+  slope[i]<-compare_bd_t(emp.phylogs[[i]],summary_tree_results$prop.samp[i])$slope_est
+  aicw_t_model[i]<-compare_bd_t(emp.phylogs[[i]],summary_tree_results$prop.samp[i])$aicw_t_model
   res<-data.frame(slope,aicw_t_model)
 }
 res
+summary(res)
 
-write.csv(res,file = "output/time_dependence.csv", sep=",", dec = ".")
-
+write.table(res,file = "output/time_dependence.csv", sep=",", dec = ".")
