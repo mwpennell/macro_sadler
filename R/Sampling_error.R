@@ -2,7 +2,7 @@ library(diversitree)
 library(rncl)
 
 # Load Jetz et al. 2012 bird family trees
-j.phylo.path<-("/Users/luisfranciscohenaodiaz/Documents/UBC/Projects/spp_rates//phylosOrig/Jetz et al. /MCC_trees/data/")
+j.phylo.path<-("/Users/luisfranciscohenaodiaz/Documents/UBC/Projects/spp_rates/phylosOrig/Jetz et al. /MCC_trees/data/")
 
 d<-dir(j.phylo.path)
 t<-grep("tree",d)
