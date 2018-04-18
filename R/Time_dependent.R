@@ -37,7 +37,6 @@ for(i in 1:length(emp.phylogs)){
   aicw_t_model[i]<-compare_bd_t(emp.phylogs[[i]],summary_tree_results$prop.samp[i])$aicw_t_model
   res<-data.frame(slope,aicw_t_model)
 }
-res
 summary(res)
 
 write.table(res,file = "output/time_dependence.csv", sep=",", dec = ".")
