@@ -42,7 +42,8 @@ tree_bd_slope <- function(pars, ages, min.taxa){
 ## filter so only look at ages less than 200 mya
 d_200 <- filter(d, tree.max.age < 200)
 ages <- d_200$tree.max.age
-slopes <- sapply(c(1:100), function(x) tree_bd_slope(pars, ages, 6))
+slopes <- sapply(c(1:1000), function(x) tree_bd_slope(pars, ages, 6))
+saveRDS(slopes,file="output/tree_bd_slope.rds")
 
 ## estimate empirical slope
 emp <- lm(log(d_200$mean.clade.lambda)~log(d_200$tree.max.age))
@@ -54,10 +55,10 @@ ggplot(df, aes(x=slopes)) + geom_histogram() + theme_bw() + xlab("slope estimate
 
 ## repeat with mu = 0
 pars_pb <- c(pars[1], 0)
-slopes_pb <- sapply(c(1:100), function(x) tree_bd_slope(pars_pb, ages, 6))
+slopes_pb <- sapply(c(1:1000), function(x) tree_bd_slope(pars_pb, ages, 6))
 df_pb <- data.frame(slopes=slopes_pb)
 ggplot(df_pb, aes(x=slopes)) + geom_histogram() + theme_bw() + xlab("slope estimates") + geom_vline(xintercept=emp)
-
+saveRDS(slopes,file="output/tree_bd_slope_mu0.rds")
 
 
 
@@ -79,6 +80,7 @@ tree.bd.time <- function(pars, max.taxa, n){
 
 n_t <- lapply(d$n.clade, function(x) 
   tree.bd.time(pars=c(tree_lambda, tree_mu), max.taxa=x, n=1000))
+saveRDS(n_t,file="output/n_t.rds")
 
 ## calculate where in the distribution of possible branching times does our tree land
 perc_t <- vector(length=nrow(d))
@@ -103,6 +105,7 @@ tree.bd.n <- function(pars, t, n){
 
 n_age <- lapply(ages, function(x) 
   tree.bd.n(pars=c(tree_lambda, tree_mu), t=x, n=1000))
+saveRDS(n_age,file="output/n_age.rds")
 
 ## calculate where in the distribution of possible Ns does our tree land
 perc_n <- vector(length=nrow(d))
