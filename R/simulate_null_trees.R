@@ -45,7 +45,7 @@ tree_bd_slope <- function(pars, ages, min.taxa, max.tries = 1000){
       lambdas[i] <- NA
     }
   }
-  fit_lm <- lm(log(lambdas)~log(ages), na.action = "na.exclude")
+  fit_lm <- lm(log(lambdas)~log(ages), na.action = na.exclude)
   as.numeric(fit_lm$coefficients["log(ages)"])
 }
 
@@ -66,8 +66,10 @@ ggplot(df, aes(x=slopes)) + geom_histogram() + theme_bw() +
 
 ## repeat with mu = 0
 #pars_pb <- c(pars[1], 0)
-pars_pb <- pars
-pars_pb[[2]] <- 0
+#pars_pb <- pars
+#pars_pb[[2]] <- 0
+pars_pb<-list(birth_rate_factor = tree_lambda*.65,
+              death_rate_factor = 0)
 slopes_pb <- sapply(c(1:2), function(x) tree_bd_slope(pars_pb, ages, 6))
 df_pb <- data.frame(slopes=slopes_pb)
 ggplot(df_pb, aes(x=slopes)) + geom_histogram() + theme_bw() +
@@ -94,7 +96,6 @@ n_t <- lapply(d$n.clade, function(x)
                max.taxa=x, n=1000))
 saveRDS(n_t,file="output/n_t.rds")
 
-
 ## calculate where in the distribution of possible branching times does our tree land
 perc_t <- vector(length=nrow(d))
 for (j in 1:nrow(d)){
@@ -120,9 +121,8 @@ tree.bd.n <- function(pars, t, n){
 n_age <- lapply(ages, function(x) 
   tree.bd.n(pars=list(birth_rate_factor = tree_lambda,
                       death_rate_factor = tree_mu),
-            t = x, n = 10))
+            t = x, n = 1000))
 saveRDS(n_age,file="output/n_age.rds")
-
 
 ## calculate where in the distribution of possible Ns does our tree land
 perc_n <- vector(length=nrow(d))
