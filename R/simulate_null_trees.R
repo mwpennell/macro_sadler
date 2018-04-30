@@ -62,19 +62,17 @@ emp <- as.numeric(emp$coefficients[2])
 ## plot distribution of recovered slopes (due to sampling alone) and include empircal slope
 df <- data.frame(slopes=slopes)
 ggplot(df, aes(x=slopes)) + geom_histogram() + theme_bw() + 
-  xlab("slope estimates") + geom_vline(xintercept=emp)
+  xlab("slope estimates") + geom_vline(xintercept=emp, color="red")
 
 ## repeat with mu = 0
 #pars_pb <- c(pars[1], 0)
 pars_pb <- pars
 pars_pb[[2]] <- 0
-slopes_pb <- sapply(c(1:1000), function(x) tree_bd_slope(pars_pb, ages, 6))
+slopes_pb <- sapply(c(1:2), function(x) tree_bd_slope(pars_pb, ages, 6))
 df_pb <- data.frame(slopes=slopes_pb)
 ggplot(df_pb, aes(x=slopes)) + geom_histogram() + theme_bw() +
-  xlab("slope estimates") + geom_vline(xintercept=emp)
+  xlab("slope estimates") + geom_vline(xintercept=emp, color="red")
 saveRDS(slopes,file="output/tree_bd_slope_mu0.rds")
-
-
 
 ## Now fixing N and looking at distribution of ages
 tree.bd.time <- function(pars, max.taxa, n){
