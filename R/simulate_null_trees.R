@@ -68,13 +68,13 @@ ggplot(df, aes(x=slopes)) + geom_histogram() + theme_bw() +
 #pars_pb <- c(pars[1], 0)
 #pars_pb <- pars
 #pars_pb[[2]] <- 0
-pars_pb<-list(birth_rate_factor = tree_lambda*.65,
+pars_pb<-list(birth_rate_factor = tree_lambda*.5,
               death_rate_factor = 0)
 slopes_pb <- sapply(c(1:2), function(x) tree_bd_slope(pars_pb, ages, 6))
 df_pb <- data.frame(slopes=slopes_pb)
 ggplot(df_pb, aes(x=slopes)) + geom_histogram() + theme_bw() +
   xlab("slope estimates") + geom_vline(xintercept=emp, color="red")
-saveRDS(slopes,file="output/tree_bd_slope_mu0.rds")
+saveRDS(slopes_pb,file="output/tree_bd_slope_mu0.rds")
 
 ## Now fixing N and looking at distribution of ages
 tree.bd.time <- function(pars, max.taxa, n){
