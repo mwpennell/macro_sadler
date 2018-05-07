@@ -16,7 +16,6 @@ tree_mu <- d %>% filter(tree.max.age > 150) %>%
 pars<-list(birth_rate_factor = tree_lambda,
            death_rate_factor = tree_mu)
 
-
 ## do n independent simulations and estimate slope for each of these
 tree.bd.mintax <- function(pars, max.t, min.taxa, max.tries = 1000){
   while(max.tries > 0){
