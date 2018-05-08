@@ -6,10 +6,16 @@ summary_tree_results<-read.delim("output/summary_tree_results.csv", sep = ",", d
 
 express<-expression(paste("Ln mean ", lambda, " (species ", Myr^-1,")"),sep=" ")
 p1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
-  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() 
-
-p1+labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
+  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() + 
+  labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
   geom_smooth(method=lm, se=F,alpha=.1) +
+  scale_size_continuous(name = "Clade\nrichness") + 
+ scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
+
+pp1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
+  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() + 
+  labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
+  geom_smooth(method='glm',formula=y~splines::bs(x,4), se=F) + #method.args=list(family="Gamma")
   scale_size_continuous(name = "Clade\nrichness") + 
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
