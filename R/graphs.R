@@ -1,6 +1,9 @@
 library(ggplot2)
 library(RColorBrewer)
 library(tidyverse)
+library(ggpubr)
+
+### Diversification Rates
 
 summary_tree_results<-read.delim("output/summary_tree_results.csv", sep = ",", dec=".")
 
@@ -15,7 +18,7 @@ p1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda
 pp1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
   geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() + 
   labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
-  geom_smooth(method='glm',formula=y~splines::bs(x,4), se=F) + #method.args=list(family="Gamma")
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=F) + #formula=y~splines::bs(x,4)
   scale_size_continuous(name = "Clade\nrichness") + 
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
@@ -32,3 +35,26 @@ p2+labs(x="Ln duration (Myr)", y=express2) + theme(axis.title = element_text(siz
   scale_size_continuous(name = "Clade\ngenera") + 
   scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1)) 
+
+### Null trees (push of the past)
+
+empirical_bd_slope<-readRDS("null_trees/empirical/output/tree_bd_slope.rds")
+m50_bd_slope<-readRDS("null_trees/mu50/output/tree_bd_slope.rds")
+m75_bd_slope<-readRDS("null_trees/mu75/output/tree_bd_slope.rds")
+null_bd_slope<-data.frame(empirical_bd_slope,m50_bd_slope,m75_bd_slope)
+
+h1<-ggplot(null_bd_slope, aes(x=empirical_bd_slope)) + geom_histogram(color="darkgreen", fill="white") + 
+  theme_bw() + geom_vline(aes(xintercept=-0.436),color="orange", linetype="dashed", size=1) + 
+  labs(title="Empirical parameters",x="Slope", y = "Count")
+
+h2<-ggplot(null_bd_slope, aes(x=m50_bd_slope)) + geom_histogram(color="darkgreen", fill="white") + 
+  theme_bw() + geom_vline(aes(xintercept=-0.436),color="orange", linetype="dashed", size=1) + 
+  labs(title="mu = 0.5 x Lambda",x="Slope", y = "Count")
+
+h3<-ggplot(null_bd_slope, aes(x=m75_bd_slope)) + geom_histogram(color="darkgreen", fill="white") + 
+  theme_bw() + geom_vline(aes(xintercept=-0.436),color="orange", linetype="dashed", size=1) + 
+  labs(title="mu = 0.75 x Lambda",x="Slope", y = "Count")
+
+ggarrange(h1, h2, h3, 
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
