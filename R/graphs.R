@@ -2,12 +2,14 @@ library(ggplot2)
 library(RColorBrewer)
 library(tidyverse)
 library(ggpubr)
+library(cowplot)
 
+#### Phylogenies ####
 summary_tree_results<-read.delim("output/summary_tree_results.csv", sep = ",", dec=".")
 express<-expression(paste("Ln mean ", lambda, " (species ", Myr^-1,")"),sep=" ")
-express1<-expression(paste("Ln mean ", mu, " (species ", Myr^-1,")"),sep=" ")
+e.express<-expression(paste("Ln mean ", mu, " (species ", Myr^-1,")"),sep=" ")
 
-### Descriptive co-relations
+# Descriptive co-relations
 a1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(n.clade))) + geom_point() + theme_bw() + 
   labs(x="Log Clade age (Myr)", y= "Log Clade Richness") + theme(axis.title = element_text(size=15)) + 
   geom_smooth(method=lm, se=T,alpha=.2) 
@@ -27,7 +29,7 @@ g1<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(mean.clade.lambda))) +
 
 g2<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(mean.clade.mu))) + 
   geom_point() + theme_bw() + 
-  labs(x= "Gamma statistic", y=express1) + theme(axis.title = element_text(size=15)) + 
+  labs(x= "Gamma statistic", y=e.express) + theme(axis.title = element_text(size=15)) + 
   geom_smooth(method=lm, se=T,alpha=.2)
 
 ggarrange(g1, g2, 
@@ -43,35 +45,61 @@ ggarrange(g1, g2, g3,
           labels = c("A", "B", "C"),
           ncol = 3, nrow = 1)
 
-### Time-dependent diversification rates
-p1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
+# Time-dependence
+ph1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
   geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() + 
-  labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
-  geom_smooth(method=lm, se=F,alpha=.1) +
+  labs(x="Clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
+  geom_smooth(method=lm, se=T,alpha=.15, formula = y ~log(x)) +
   scale_size_continuous(name = "Clade\nrichness") + 
- scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
+  scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
-pp1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
-  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() + 
-  labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
-  geom_smooth(method='glm',method.args=list(family="Gamma"), se=F) + #formula=y~splines::bs(x,4)
+ph1.1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
+  geom_point(aes(size=n.clade,colour=gamma.stat),show.legend = F) + theme_cowplot() + 
+  labs(x="Clade age (Myr)", y=expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")) + 
+  theme(axis.title = element_text(size=15)) + 
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + #formula=y~splines::bs(x,4)
   scale_size_continuous(name = "Clade\nrichness") + 
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1))
 
-summary_paleo_results<-read.delim("output/summary_paleo_results.csv", sep = ",", dec=".")
-long_paleo_results<-(gather(summary_paleo_results, key="Rate", value = "Estimate",mean.clade.mu:mean.clade.origination))
-long_paleo_results$Rate<-recode(long_paleo_results$Rate, `mean.clade.mu`="Extinction", `mean.clade.origination`="Origination")
+ph2<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
+  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_cowplot() + 
+  labs(x="Ln clade age (Myr)", y=express) + theme(axis.title = element_text(size=15)) + 
+  geom_smooth(method=lm, se=F,alpha=.1) +
+  scale_size_continuous(name = "Clade\nrichness") + 
+  scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
-express2<-expression(paste("Ln estimate (genera ", Myr^-1,")"),sep=" ")
-p2<-ggplot(long_paleo_results,aes(x=log(Duration),y=log(Estimate),shape=Rate, group=Rate)) + 
-  geom_point(aes(size=Ngen,colour=freqRat)) + theme_bw() +labs(x="Ln duration (Myr)", y=express2) + 
-  theme(axis.title = element_text(size=15)) + geom_smooth(aes(linetype=Rate),method=lm, se=F,alpha=.1) +
-  scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
-  guides(size = guide_legend(order=1)) 
+ph3<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.mu))) + 
+  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_cowplot() + 
+  labs(x="Clade age (Myr)", y=expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")) + theme(axis.title = element_text(size=15)) + 
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + #formula=y~splines::bs(x,4)
+  scale_size_continuous(name = "Clade\nrichness") + 
+  scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + 
+  guides(size = guide_legend(order=1))
+  
+ph4<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.mu))) + 
+  geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_bw() + 
+  labs(x="Ln clade age (Myr)", y=e.express) + theme(axis.title = element_text(size=15)) + 
+  geom_smooth(method=lm, se=F,alpha=.1) +
+  scale_size_continuous(name = "Clade\nrichness") + 
+  scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
-### Null trees (push of the past)
+l.inset<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
+  geom_point() + theme_cowplot() + labs(x="", y="") +
+  #labs(x="Ln clade age (Myr)", y=express) +
+  theme(axis.title = element_text(size=10)) + 
+  geom_smooth(method=lm, se=F,alpha=.1)
+
+m.inset<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.mu))) + 
+  geom_point() + theme_cowplot() + labs(x="", y="") +
+  #labs(x="Ln clade age (Myr)", y=e.express) + 
+  theme(axis.title = element_text(size=10)) + 
+  geom_smooth(method=lm, se=F,alpha=.1)
+
+gg1<-ggdraw()+ draw_plot(ph1.1, x = 0, y = 0) + draw_plot(l.inset, x = 0.6, y = 0.6, width = 0.4, height = 0.4)
+gg2<-ggdraw()+ draw_plot(ph3, x = 0, y = 0) + draw_plot(m.inset, x = 0.45, y = 0.6, width = 0.4, height = 0.4)
+
+# Null trees (push of the past)
 
 empirical_bd_slope<-readRDS("null_trees/empirical/output/tree_bd_slope.rds")
 m50_bd_slope<-readRDS("null_trees/mu50/output/tree_bd_slope.rds")
@@ -93,3 +121,72 @@ h3<-ggplot(null_bd_slope, aes(x=m75_bd_slope)) + geom_histogram(color="darkgreen
 ggarrange(h1, h2, h3, 
           labels = c("A", "B", "C"),
           ncol = 3, nrow = 1)
+
+#### Fossils ####
+summary_paleo_results<-read.delim("output/summary_paleo_results.csv", sep = ",", dec=".")
+
+o.express<-expression(paste("Ln origination rate (genera ", Myr^-1,")"),sep=" ")
+p1.1<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.origination))) + 
+  geom_point(aes(size=Ngen,colour=freqRat), na.rm = T, show.legend = F) + theme_cowplot() + 
+  labs(x="Duration (Myr)", y=expression(paste("Origination rate (genera ", Myr^-1,")"),sep=" ")) + 
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) +
+  scale_size_continuous(name = "Clade\ngenera") + 
+  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  guides(size = guide_legend(order=1)) 
+
+p1<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.origination))) + 
+  geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + 
+  theme_bw() +labs(x="Ln duration (Myr)", y=o.express) + 
+  theme(axis.title = element_text(size=15)) + geom_smooth(method=lm, se=F,alpha=.15, na.rm = T) +
+  scale_size_continuous(name = "Clade\ngenera") + 
+  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1)) 
+
+p2<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.mu))) + 
+  geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + theme_cowplot() + 
+  labs(x="Duration (Myr)", y=expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")) + 
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) +
+  scale_size_continuous(name = "Clade\ngenera") + 
+  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  guides(size = guide_legend(order=1)) 
+
+p2.2<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.mu))) + 
+  geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + theme_bw() +labs(x="Ln duration (Myr)", y=e.express) + 
+  theme(axis.title = element_text(size=15)) + geom_smooth(method=lm, se=F,alpha=.15, na.rm = T) +
+  scale_size_continuous(name = "Clade\ngenera") + 
+  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  guides(size = guide_legend(order=1)) 
+
+long_paleo_results<-(gather(summary_paleo_results, key="Rate", value = "Estimate",mean.clade.mu:mean.clade.origination))
+long_paleo_results$Rate<-recode(long_paleo_results$Rate, `mean.clade.mu`="Extinction", `mean.clade.origination`="Origination")
+
+express2<-expression(paste("Ln estimate (genera ", Myr^-1,")"),sep=" ")
+p<-ggplot(long_paleo_results,aes(x=log(Duration),y=log(Estimate),shape=Rate, group=Rate)) + 
+  geom_point(aes(size=Ngen,colour=freqRat)) + theme_bw() +labs(x="Ln duration (Myr)", y=express2) + 
+  theme(axis.title = element_text(size=15)) + geom_smooth(aes(linetype=Rate),method=lm, se=F,alpha=.1) +
+  scale_size_continuous(name = "Clade\ngenera") + 
+  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  guides(size = guide_legend(order=1)) 
+
+ggarrange(p1, p2.2, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+o.inset<-ggplot(summary_paleo_results, aes(x=log(Duration),y=log(mean.clade.origination))) + 
+  geom_point() + theme_cowplot() + labs(x="", y="") +
+  #labs(x="Ln clade duration (Myr)", y=o.express) + 
+  theme(axis.title = element_text(size=10)) + 
+  geom_smooth(method=lm, se=F,alpha=.1)
+
+mf.inset<-ggplot(summary_paleo_results, aes(x=log(Duration),y=log(mean.clade.mu))) + 
+  geom_point() + theme_cowplot() + labs(x="", y="") +
+  #labs(x="Ln clade duration (Myr)", y=e.express) +
+  theme(axis.title = element_text(size=10)) + 
+  geom_smooth(method=lm, se=F,alpha=.1)
+
+gg3<-ggdraw()+ draw_plot(p1.1, x = 0, y = 0) + draw_plot(o.inset, x = 0.6, y = 0.6, width = 0.4, height = 0.4)
+gg4<-ggdraw()+ draw_plot(p2, x = 0, y = 0) + draw_plot(mf.inset, x = 0.35, y = 0.6, width = 0.4, height = 0.4)
+
+# THE GRAPH
+ggarrange(gg1, gg2, gg3, gg4, 
+          labels = c("A", "B", "C", "D"),
+          ncol = 2, nrow = 2)
