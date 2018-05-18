@@ -99,6 +99,10 @@ m.inset<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.m
 gg1<-ggdraw()+ draw_plot(ph1.1, x = 0, y = 0) + draw_plot(l.inset, x = 0.6, y = 0.6, width = 0.4, height = 0.4)
 gg2<-ggdraw()+ draw_plot(ph3, x = 0, y = 0) + draw_plot(m.inset, x = 0.45, y = 0.6, width = 0.4, height = 0.4)
 
+ggarrange(gg1, gg2, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
 # Null trees (push of the past)
 
 empirical_bd_slope<-readRDS("null_trees/empirical/output/tree_bd_slope.rds")
@@ -128,10 +132,10 @@ summary_paleo_results<-read.delim("output/summary_paleo_results.csv", sep = ",",
 o.express<-expression(paste("Ln origination rate (genera ", Myr^-1,")"),sep=" ")
 p1.1<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.origination))) + 
   geom_point(aes(size=Ngen,colour=freqRat), na.rm = T, show.legend = F) + theme_cowplot() + 
-  labs(x="Duration (Myr)", y=expression(paste("Origination rate (genera ", Myr^-1,")"),sep=" ")) + 
+  labs(x="Duration (Myr)", y=expression(paste("Mean origination rate (genera ", Myr^-1,")"),sep=" ")) + 
   geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) +
   scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1)) 
 
 p1<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.origination))) + 
@@ -139,21 +143,21 @@ p1<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.originatio
   theme_bw() +labs(x="Ln duration (Myr)", y=o.express) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(method=lm, se=F,alpha=.15, na.rm = T) +
   scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1)) 
+  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1)) 
 
 p2<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.mu))) + 
   geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + theme_cowplot() + 
   labs(x="Duration (Myr)", y=expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")) + 
   geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) +
   scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1)) 
 
 p2.2<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.mu))) + 
   geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + theme_bw() +labs(x="Ln duration (Myr)", y=e.express) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(method=lm, se=F,alpha=.15, na.rm = T) +
   scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1)) 
 
 long_paleo_results<-(gather(summary_paleo_results, key="Rate", value = "Estimate",mean.clade.mu:mean.clade.origination))
@@ -164,12 +168,8 @@ p<-ggplot(long_paleo_results,aes(x=log(Duration),y=log(Estimate),shape=Rate, gro
   geom_point(aes(size=Ngen,colour=freqRat)) + theme_bw() +labs(x="Ln duration (Myr)", y=express2) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(aes(linetype=Rate),method=lm, se=F,alpha=.1) +
   scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Record\ncompletedness",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1)) 
-
-ggarrange(p1, p2.2, 
-          labels = c("A", "B"),
-          ncol = 2, nrow = 1)
 
 o.inset<-ggplot(summary_paleo_results, aes(x=log(Duration),y=log(mean.clade.origination))) + 
   geom_point() + theme_cowplot() + labs(x="", y="") +
@@ -185,6 +185,10 @@ mf.inset<-ggplot(summary_paleo_results, aes(x=log(Duration),y=log(mean.clade.mu)
 
 gg3<-ggdraw()+ draw_plot(p1.1, x = 0, y = 0) + draw_plot(o.inset, x = 0.6, y = 0.6, width = 0.4, height = 0.4)
 gg4<-ggdraw()+ draw_plot(p2, x = 0, y = 0) + draw_plot(mf.inset, x = 0.35, y = 0.6, width = 0.4, height = 0.4)
+
+ggarrange(gg3, gg4, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
 
 # THE GRAPH
 ggarrange(gg1, gg2, gg3, gg4, 
