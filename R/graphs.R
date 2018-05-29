@@ -129,35 +129,36 @@ ggarrange(h1, h2, h3,
 #### Fossils ####
 summary_paleo_results<-read.delim("output/summary_paleo_results.csv", sep = ",", dec=".")
 
-o.express<-expression(paste("Ln origination rate (genera ", Myr^-1,")"),sep=" ")
+o.express<-expression(paste("Ln origination (genera ", Myr^-1,")"),sep=" ")
 p1.1<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.origination))) + 
-  geom_point(aes(size=Ngen,colour=freqRat), na.rm = T, show.legend = F) + theme_cowplot() + 
-  labs(x="Duration (Myr)", y=expression(paste("Mean origination rate (genera ", Myr^-1,")"),sep=" ")) + 
+  geom_point(aes(size=Ngen,colour=MLcomp), na.rm = T, show.legend = F) + theme_cowplot() + 
+  labs(x="Duration (Myr)", y=expression(paste("Mean origination (genera ", Myr^-1,")"),sep=" ")) + 
   geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) +
-  scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_size_continuous(name = "Number\ngenera") + 
+  scale_colour_gradientn(name="Completedness",colours = rev(brewer.pal(3,"Set1"))) + 
   guides(size = guide_legend(order=1)) 
 
 p1<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.origination))) + 
   geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + 
   theme_bw() +labs(x="Ln duration (Myr)", y=o.express) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(method=lm, se=F,alpha=.15, na.rm = T) +
-  scale_size_continuous(name = "Clade\ngenera") + 
+  scale_size_continuous(name = "Number\ngenera") + 
   scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1)) 
 
 p2<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.mu))) + 
-  geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + theme_cowplot() + 
-  labs(x="Duration (Myr)", y=expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")) + 
+  geom_point(aes(size=Ngen,colour=MLcomp), na.rm = T) + theme_cowplot() + 
+  labs(x="Duration (Myr)", y=expression(paste("Mean ", mu, " (genera ", Myr^-1,")"),sep=" ")) + 
   geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) +
-  scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_size_continuous(name = "Number\ngenera") + 
+  scale_colour_gradientn(name="Fossil\nCompletedness",colours = rev(brewer.pal(3,"Set1"))) + 
   guides(size = guide_legend(order=1)) 
 
+e.express<-expression(paste("Ln Mean ",mu ,"rate (genera ", Myr^-1,")"),sep=" ")
 p2.2<-ggplot(summary_paleo_results,aes(x=log(Duration),y=log(mean.clade.mu))) + 
   geom_point(aes(size=Ngen,colour=freqRat), na.rm = T) + theme_bw() +labs(x="Ln duration (Myr)", y=e.express) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(method=lm, se=F,alpha=.15, na.rm = T) +
   scale_size_continuous(name = "Clade\ngenera") + 
-  scale_colour_gradientn(name="Frequency\nratio",colours = rev(brewer.pal(4,"Spectral"))) + 
+  scale_colour_gradientn(name="Number\ngenera",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1)) 
 
 long_paleo_results<-(gather(summary_paleo_results, key="Rate", value = "Estimate",mean.clade.mu:mean.clade.origination))
