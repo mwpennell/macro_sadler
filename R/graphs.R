@@ -3,6 +3,7 @@ library(RColorBrewer)
 library(tidyverse)
 library(ggpubr)
 library(cowplot)
+library(ggthemes)
 
 #### Phylogenies ####
 summary_tree_results<-read.delim("output/summary_tree_results.csv", sep = ",", dec=".")
@@ -10,35 +11,37 @@ express<-expression(paste("Ln mean ", lambda, " (species ", Myr^-1,")"),sep=" ")
 e.express<-expression(paste("Ln mean ", mu, " (species ", Myr^-1,")"),sep=" ")
 
 # Descriptive co-relations
-a1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(n.clade))) + geom_point() + theme_bw() + 
-  labs(x="Log Clade age (Myr)", y= "Log Clade Richness") + theme(axis.title = element_text(size=15)) + 
+a1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(n.clade))) + geom_point() + 
+  theme_tufte(base_family = "Helvetica") + geom_rangeframe() + theme(axis.title = element_text(size=15)) + 
+  labs(x="Log Clade age (Myr)", y= "Log Clade richness") + 
   geom_smooth(method=lm, se=T,alpha=.2) 
 
-a2<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=(gamma.stat))) + geom_point() + theme_bw() + 
-  labs(x="Log Clade age (Myr)", y= "Gamma statistic") + theme(axis.title = element_text(size=15)) + 
+a2<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=(gamma.stat))) + geom_point() + 
+  theme_tufte(base_family = "Helvetica") + geom_rangeframe() +  theme(axis.title = element_text(size=15)) + 
+  labs(x="Log Clade age (Myr)", y= "Gamma statistic") + 
   geom_smooth(method=lm, se=T,alpha=.2) 
 
 ggarrange(a1, a2,  
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-g1<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(mean.clade.lambda))) + 
-  geom_point() + theme_bw() + 
-  labs(x= "Gamma statistic", y=express) + theme(axis.title = element_text(size=15)) + 
+g1<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(mean.clade.lambda))) + geom_point() + 
+  theme_tufte(base_family = "Helvetica") + geom_rangeframe() + theme(axis.title = element_text(size=15)) +
+  labs(x= "Gamma statistic", y=express) + 
   geom_smooth(method=lm, se=T,alpha=.2)
 
-g2<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(mean.clade.mu))) + 
-  geom_point() + theme_bw() + 
-  labs(x= "Gamma statistic", y=e.express) + theme(axis.title = element_text(size=15)) + 
+g2<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(mean.clade.mu))) + geom_point() +
+  theme_tufte(base_family = "Helvetica") + geom_rangeframe() + theme(axis.title = element_text(size=15)) +
+  labs(x= "Gamma statistic", y=e.express) + 
   geom_smooth(method=lm, se=T,alpha=.2)
 
 ggarrange(g1, g2, 
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-g3<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(net.diver))) + 
-  geom_point() + theme_bw() + 
-  labs(x= "Gamma statistic", y=expression(paste("Ln Net diversification (species ", Myr^-1,")"),sep=" ")) + theme(axis.title = element_text(size=15)) + 
+g3<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(net.diver))) + geom_point() + 
+  theme_tufte(base_family = "Helvetica") + geom_rangeframe() + theme(axis.title = element_text(size=15)) +
+  labs(x= "Gamma statistic", y=expression(paste("Ln Net diversification (species ", Myr^-1,")"),sep=" ")) +  
   geom_smooth(method=lm, se=T,alpha=.2)
 
 ggarrange(g1, g2, g3,  
@@ -110,17 +113,20 @@ m50_bd_slope<-readRDS("null_trees/mu50/output/tree_bd_slope.rds")
 m75_bd_slope<-readRDS("null_trees/mu75/output/tree_bd_slope.rds")
 null_bd_slope<-data.frame(empirical_bd_slope,m50_bd_slope,m75_bd_slope)
 
-h1<-ggplot(null_bd_slope, aes(x=empirical_bd_slope)) + geom_histogram(color="darkgreen", fill="white") + 
-  theme_bw() + geom_vline(aes(xintercept=-0.436),color="orange", linetype="dashed", size=1) + 
-  labs(title="Empirical parameters",x="Slope", y = "Count")
+h1<-ggplot(null_bd_slope, aes(x=empirical_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
+  geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="Empirical parameters", x="Slope", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$empirical_bd_slope)), y=c(0, 150)), aes(x, y)) 
 
-h2<-ggplot(null_bd_slope, aes(x=m50_bd_slope)) + geom_histogram(color="darkgreen", fill="white") + 
-  theme_bw() + geom_vline(aes(xintercept=-0.436),color="orange", linetype="dashed", size=1) + 
-  labs(title="mu = 0.5 x Lambda",x="Slope", y = "Count")
+h2<-ggplot(null_bd_slope, aes(x=m50_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
+  geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="mu = 0.5 x Lambda",x="Slope", y = "") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$m50_bd_slope)), y=c(0, 155)), aes(x, y)) 
 
-h3<-ggplot(null_bd_slope, aes(x=m75_bd_slope)) + geom_histogram(color="darkgreen", fill="white") + 
-  theme_bw() + geom_vline(aes(xintercept=-0.436),color="orange", linetype="dashed", size=1) + 
-  labs(title="mu = 0.75 x Lambda",x="Slope", y = "Count")
+h3<-ggplot(null_bd_slope, aes(x=m75_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
+  geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="mu = 0.75 x Lambda",x="Slope", y = "") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$m75_bd_slope)), y=c(0, 130)), aes(x, y)) 
 
 ggarrange(h1, h2, h3, 
           labels = c("A", "B", "C"),
