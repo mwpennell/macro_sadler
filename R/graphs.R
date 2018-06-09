@@ -60,7 +60,7 @@ ph1.1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda)))
   geom_point(aes(size=n.clade,colour=gamma.stat),show.legend = F) + theme_cowplot() + 
   labs(x="Clade age (Myr)", y=expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")) + 
   theme(axis.title = element_text(size=15)) + 
-  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + #formula=y~splines::bs(x,4)
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + 
   scale_size_continuous(name = "Clade\nrichness") + 
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1))
@@ -75,7 +75,7 @@ ph2<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambd
 ph3<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.mu))) + 
   geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_cowplot() + 
   labs(x="Clade age (Myr)", y=expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")) + theme(axis.title = element_text(size=15)) + 
-  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + #formula=y~splines::bs(x,4)
+  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + 
   scale_size_continuous(name = "Clade\nrichness") + 
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + 
   guides(size = guide_legend(order=1))
