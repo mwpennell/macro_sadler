@@ -14,11 +14,14 @@ e.express<-expression(paste("Ln mean ", mu, " (species ", Myr^-1,")"),sep=" ")
 a1<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(n.clade))) + geom_point() + 
   theme_tufte(base_family = "Helvetica") + geom_rangeframe() + theme(axis.title = element_text(size=15)) + 
   labs(x="Log Clade age (Myr)", y= "Log Clade richness") + 
+  scale_x_continuous(breaks= c(2:6), labels=as.character(round(exp(c(2:6)),0))) +
+  scale_y_continuous(breaks= seq(4,10,2), labels=as.character(round(exp(seq(4,10,2)),0))) +
   geom_smooth(method=lm, se=T,alpha=.2) 
 
 a2<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=(gamma.stat))) + geom_point() + 
   theme_tufte(base_family = "Helvetica") + geom_rangeframe() +  theme(axis.title = element_text(size=15)) + 
   labs(x="Log Clade age (Myr)", y= "Gamma statistic") + 
+  scale_x_continuous(breaks= c(2:6), labels=as.character(round(exp(c(2:6)),0))) +
   geom_smooth(method=lm, se=T,alpha=.2) 
 
 ggarrange(a1, a2,  
@@ -47,6 +50,22 @@ g3<-ggplot(summary_tree_results, aes(x=(gamma.stat),y=log(net.diver))) + geom_po
 ggarrange(g1, g2, g3,  
           labels = c("A", "B", "C"),
           ncol = 3, nrow = 1)
+
+#
+hh1<-ggplot(summary_tree_results, aes(x=best.n.shifts)) + geom_histogram(color="darkblue", fill="white") + 
+  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="", x="Best Number of Shifts", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(0, 20), y=c(0, 75)), aes(x, y)) 
+
+hh2<-ggplot(summary_tree_results, aes(x=best.n.shifts/tree.max.age)) + geom_histogram(color="darkblue", fill="white") + 
+  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="", x=expression(paste("Best Number of Shifts per ", Myr^-1),sep=" "), y = "") + 
+  theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(0, .4), y=c(0, 40)), aes(x, y)) 
+
+ggarrange(hh1, hh2,   
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
 
 # Time-dependence
 ph1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
