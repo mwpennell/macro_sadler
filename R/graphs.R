@@ -51,21 +51,25 @@ ggarrange(g1, g2, g3,
           labels = c("A", "B", "C"),
           ncol = 3, nrow = 1)
 
-#
-hh1<-ggplot(summary_tree_results, aes(x=best.n.shifts)) + geom_histogram(color="darkblue", fill="white") + 
+# Number of shifts
+ss<-filter(summary_tree_results,summary_tree_results$best.n.shifts>=2)
+hh1<-ggplot(ss, aes(x=best.n.shifts)) + geom_histogram(color="darkblue", fill="white") + 
   #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
   labs(title="", x="Best Number of Shifts", y = "Count") + theme_tufte(base_family = "Helvetica") + 
-  geom_rangeframe(data=data.frame(x=c(0, 20), y=c(0, 75)), aes(x, y)) 
+  geom_rangeframe(data=data.frame(x=c(0, 20), y=c(0, 25)), aes(x, y)) 
 
-hh2<-ggplot(summary_tree_results, aes(x=best.n.shifts/tree.max.age)) + geom_histogram(color="darkblue", fill="white") + 
+hh2<-ggplot(ss, aes(x=best.n.shifts/tree.max.age)) + geom_histogram(color="darkblue", fill="white") + 
   #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="", x=expression(paste("Best Number of Shifts per ", Myr^-1),sep=" "), y = "") + 
+  labs(title="",y = "Count", x=expression(paste("Best Number of Shifts per ", Myr^-1),sep=" "), y = "") + 
   theme_tufte(base_family = "Helvetica") + 
-  geom_rangeframe(data=data.frame(x=c(0, .4), y=c(0, 40)), aes(x, y)) 
+  geom_rangeframe(data=data.frame(x=c(0, .25), y=c(0, 7.5)), aes(x, y)) 
 
 ggarrange(hh1, hh2,   
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
+
+round(1/mean(ss$best.n.shifts/ss$tree.max.age),1)
+round(var(ss$best.n.shifts/ss$tree.max.age),3)
 
 # Time-dependence
 ph1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 

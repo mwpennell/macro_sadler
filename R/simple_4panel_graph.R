@@ -20,20 +20,20 @@ summary(lm(log(var.clade.mu)~log(tree.max.age),data=summary_tree_results))
 ph1.1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
   geom_point(show.legend = F) + theme_cowplot() + 
   labs(x="Clade age (Myr)", y=expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")) + 
-  theme(axis.title = element_text(size=15)) + geom_smooth(method="glm", method.args=list(gaussian(link="log")),alpha=.15)
-  #+ geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) 
+  theme(axis.title = element_text(size=15)) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=2)), se=F, na.rm = T)
+  # + geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) 
 
 ph3<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.mu))) + 
   geom_point() + theme_cowplot() + 
   labs(x="Clade age (Myr)", y=expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")) + 
-  theme(axis.title = element_text(size=15)) + geom_smooth(method="glm", method.args=list(gaussian(link="log")),alpha=.15)
-  #+ geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) 
+  theme(axis.title = element_text(size=15)) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=1)), se=F, na.rm = T)
+  # + geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) 
 
 l.inset<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
   geom_point() + theme_cowplot() + labs(x="", y="") + 
   scale_x_continuous(breaks= c(1,3.5,6), labels=as.character(round(exp(c(1,3.5,6)),0))) +
   scale_y_continuous(breaks= c(-3.5,-1.5,0), labels=as.character(round(exp(c(-3.5,-1.5,0)),2))) +
-  #labs(x="Ln clade age (Myr)", y=express) +
+  # labs(x="Ln clade age (Myr)", y=express) +
   theme(axis.title = element_text(size=10), axis.text.x = element_text(size=10), axis.text.y = element_text(size=10)) + 
   geom_smooth(method=lm, se=T,alpha=.1)
 
@@ -55,14 +55,12 @@ ggarrange(gg1, gg2,
 o.express<-expression(paste("Ln origination rate (genera ", Myr^-1,")"),sep=" ")
 p1.1<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.origination))) + 
   geom_point( na.rm = T, show.legend = F) + theme_cowplot() + 
-  labs(x="Duration (Myr)", y=expression(paste("Mean origination (genera ", Myr^-1,")"),sep=" ")) +
-  geom_smooth(method="glm", method.args=list(gaussian(link="log")),alpha=.15)
+  labs(x="Duration (Myr)", y=expression(paste("Mean origination (genera ", Myr^-1,")"),sep=" ")) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=1)), se=F, na.rm = T)
 #+ geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15)
   
 p2<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.mu))) + 
   geom_point(na.rm = T) + theme_cowplot() + 
-  labs(x="Duration (Myr)", y=expression(paste("Mean ", mu, " (genera ", Myr^-1,")"),sep=" ")) + 
-  geom_smooth(method="glm", method.args=list(gaussian(link="log")),alpha=.15) 
+  labs(x="Duration (Myr)", y=expression(paste("Mean ", mu, " (genera ", Myr^-1,")"),sep=" ")) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=1)), se=F, na.rm = T)
 #+ geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15)
 
 o.inset<-ggplot(summary_paleo_results, aes(x=log(Duration),y=log(mean.clade.origination))) + 
