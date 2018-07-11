@@ -5,6 +5,7 @@ library(scales)
 library(tidyverse)
 library(ggpubr)
 
+#### Phylogenies ####
 summary_tree_results<-read.table("output/summary_tree_results.csv", header = T, dec = ".", sep=",")
 summary_tree_results<-filter(summary_tree_results,prop.samp >= 0.01)
 summary_tree_results<-filter(str,ntips >6)
@@ -19,13 +20,13 @@ summary(lm(log(var.clade.mu)~log(tree.max.age),data=summary_tree_results))
 
 ph1.1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
   geom_point(show.legend = F, colour= "#0E233E", size=2) + theme_cowplot() + 
-  labs(x="Clade age (Myr)", y=expression(paste("Speciation rate (species ", Myr^-1,")"),sep=" ")) + 
+  labs(x="Clade age (Myr)", y=expression(paste("Speciation (species ", Myr^-1,")"),sep=" ")) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=2)), se=F, na.rm = T, colour="#EA3770", size=1.5)
   # + geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) 
 
 ph3<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.mu))) + 
   geom_point() + theme_cowplot() + 
-  labs(x="Clade age (Myr)", y=expression(paste("Extinction rate (species ", Myr^-1,")"),sep=" ")) + 
+  labs(x="Clade age (Myr)", y=expression(paste("Extinction (species ", Myr^-1,")"),sep=" ")) + 
   theme(axis.title = element_text(size=15)) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=1)), se=F, na.rm = T, colour="#EA3770", size=1.5)
   # + geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) 
 
@@ -52,6 +53,7 @@ ggarrange(gg1, gg2,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
+#### Fossils - PerCapita ####
 o.express<-expression(paste("Origination rate (genera ", Myr^-1,")"),sep=" ")
 p1.1<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.origination))) + 
   geom_point(colour= "#0E233E", size=2, na.rm = T, show.legend = F) + theme_cowplot() + 
@@ -87,7 +89,50 @@ ggarrange(gg3, gg4,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-# THE GRAPH
+#### Fossils - Pyrate ####
+summary_fossil_pyrate<-read.table("output/Fossil_PyRate.csv", header = T, dec = ".", sep=",")
+summary_plant_pyrate<-read.table("output/Plants_PyRate.csv", header = T, dec = ".", sep=",")
+summary_plant_pyrate$group<-rep("Plants",length(summary_plant_pyrate))
+summary_pyrate_results<-rbind.data.frame(summary_fossil_pyrate,summary_plant_pyrate)
+
+o.express<-expression(paste("Origination rate (genera ", Myr^-1,")"),sep=" ")
+p1.1<-ggplot(summary_pyrate_results,aes(x=(duration),y=(ori.median))) + 
+  geom_point(colour= "#0E233E", size=2, na.rm = T, show.legend = F) + theme_cowplot() + 
+  labs(x="Duration (Myr)", y=expression(paste("Origination (genera ", Myr^-1,")"),sep=" ")) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=1)), se=F, na.rm = T, colour="#EA3770", size=1.5)
+#+ geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15)
+
+p2<-ggplot(summary_pyrate_results,aes(x=(duration),y=(ext.median))) + 
+  geom_point(colour= "#0E233E", size=2, na.rm = T) + theme_cowplot() + 
+  labs(x="Duration (Myr)", y=expression(paste("Extinction (genera ", Myr^-1,")"),sep=" ")) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=1)), se=F, na.rm = T, colour="#EA3770", size=1.5)
+#+ geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15)
+
+o.inset<-ggplot(summary_pyrate_results, aes(x=log(duration),y=log(ori.median))) + 
+  geom_point(colour= "#0E233E") + theme_cowplot() + labs(x="", y="") +
+  scale_x_continuous(breaks= c(4,5,6), labels=as.character(round(exp(c(4,5,6)),0))) +
+  scale_y_continuous(breaks= c(-6:-3), labels=as.character(round(exp(c(-6:-3)),2))) +
+  theme(axis.title = element_text(size=10), axis.text.x = element_text(size=10), axis.text.y = element_text(size=10)) + 
+  #labs(x="Ln clade duration (Myr)", y=o.express) + 
+  geom_smooth(method=lm, se=T,alpha=.1, colour="#EA3770", size=1.5)
+
+mf.inset<-ggplot(summary_pyrate_results, aes(x=log(duration),y=log(ext.median))) + 
+  geom_point(colour= "#0E233E") + theme_cowplot() + labs(x="", y="") +
+  scale_x_continuous(breaks= c(4,5,6), labels=as.character(round(exp(c(4,5,6)),0))) +
+  scale_y_continuous(breaks= c(-9:-6), labels=as.character(round(exp(c(-9:-6)),4))) +
+  theme(axis.title = element_text(size=10), axis.text.x = element_text(size=10), axis.text.y = element_text(size=10)) +
+  #labs(x="Ln clade duration (Myr)", y=e.express) +
+  theme(axis.title = element_text(size=10)) + 
+  geom_smooth(method=lm, se=T,alpha=.1, colour="#EA3770", size=1.5)
+
+
+gg3<-ggdraw()+ draw_plot(p1.1, x = 0, y = 0) + draw_plot(o.inset, x = 0.5, y = 0.5, width = 0.45, height = 0.45)
+gg4<-ggdraw()+ draw_plot(p2, x = 0, y = 0) + draw_plot(mf.inset, x = 0.5, y = 0.5, width = 0.45, height = 0.45)
+
+ggarrange(gg3, gg4, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+#### THE GRAPH ####
 ggarrange(gg1, gg2, gg3, gg4, 
           labels = c("A", "B", "C", "D"),
           ncol = 2, nrow = 2)
+
