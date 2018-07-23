@@ -54,6 +54,9 @@ ggarrange(gg1, gg2,
           ncol = 2, nrow = 1)
 
 #### Fossils - PerCapita ####
+summary(lm(log(summary_paleo_results$mean.clade.origination)~log(summary_paleo_results$Duration)))
+summary(lm(log(summary_paleo_results$mean.clade.mu)~log(summary_paleo_results$Duration)))
+
 o.express<-expression(paste("Origination rate (genera ", Myr^-1,")"),sep=" ")
 p1.1<-ggplot(summary_paleo_results,aes(x=(Duration),y=(mean.clade.origination))) + 
   geom_point(colour= "#0E233E", size=2, na.rm = T, show.legend = F) + theme_cowplot() + 
