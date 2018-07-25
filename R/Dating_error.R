@@ -1,6 +1,8 @@
 library(tidyverse)
 library(diversitree)
 library(castor)
+library(ggthemes)
+library(ggpubr)
 
 ## data simulations
 d <- read.csv("output/summary_tree_results.csv")
@@ -15,7 +17,6 @@ tree_mu <- d %>% filter(tree.max.age > 150) %>%
 #pars <- c(tree_lambda, tree_mu)
 pars<-list(birth_rate_factor = tree_lambda,
            death_rate_factor = tree_mu)
-
 
 ## do n independent simulations and estimate slope for each of these
 tree.bd.taxa <- function(pars, taxa, max.tries = 1000){
@@ -87,13 +88,10 @@ Nreps <- 10
 d_10 <- filter(d, ntips > 10)
 ntips <- as.numeric(d_10$ntips)
 slopes_taxa <- sapply(c(1:Nreps), function(x) tree_bd_slope(pars, taxa = ntips, error = error)) %>% t()
-
-
+slopes_taxa <-as.data.frame(slopes_taxa)
 
 ## estimate empirical slope
-emp_10 <- lm(log(d_10$mean.clade.lambda)~log(d_10$tree.max.age))
-emp_taxa <- as.numeric(emp_10$coefficients[2])
-
+emp_taxa <- lm(log(d_10$mean.clade.lambda)~log(d_10$tree.max.age))$coefficients[[2]]
 
 ## calculate where in the distribution of possible slopes does our estimate land
 perc_taxa <-  vector(length = length(error), mode = "numeric")
@@ -101,10 +99,29 @@ for (j in 1:length(error)){
   perc_taxa[j] <- sum(slopes_taxa[ , j] < emp_taxa)
 }
 
-## plot distribution of recovered slopes (due to dating bias) and include empircal slope
-ggplot(perc, aes(x = value)) + geom_histogram(bins = 100) + theme_bw() + 
-  xlab("slope estimates") + geom_vline(xintercept=0.05, color="red") +
-  facet_grid(cond ~ .)
+## plot distribution of recovered slopes (due to dating bias) and include empirical slope
+h1<-ggplot(slopes_taxa, aes(x = `0.1`)) + geom_histogram(color="yellow4", fill="white") + 
+  labs(title="Error ~ 0.1", x="Slope estimates", y = "Count") + 
+  geom_vline(xintercept=-0.5, color="red", linetype="dashed", size=1) +
+  theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(emp_taxa, 0), y=c(0, 150)), aes(x, y)) 
+
+h2<-ggplot(slopes_taxa, aes(x = `0.5`)) + geom_histogram(color="yellow4", fill="white") + 
+  labs(title="Error ~ 0.5", x="Slope estimates", y = "") + 
+  geom_vline(xintercept=-0.5, color="red", linetype="dashed", size=1) +
+  theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(emp_taxa, max(slopes_taxa$`0.5`)), y=c(0, 200)), aes(x, y)) 
+  
+h3<-ggplot(slopes_taxa, aes(x = `0.9`)) + geom_histogram(color="yellow4", fill="white") + 
+  labs(title="Error ~ 0.9", x="Slope estimates", y = "") + 
+  geom_vline(xintercept=-0.5, color="red", linetype="dashed", size=1) +
+  theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(emp_taxa, max(slopes_taxa$`0.9`)), y=c(0, 225)), aes(x, y)) 
+
+ggarrange(h1, h2, h3,   
+          labels = c("A", "B","C"),
+          ncol = 3, nrow = 1)
+
 # plot the most extreme bias (i.e., slope = 10)
 df <- data.frame(time = slopes_ages[ , "10"], ntip = slopes_taxa[ , "10"]) %>% gather(cond, value) %>% mutate(cond = as.factor(cond))
 vline.df <- data.frame(cond = c("time", "ntip"), value = c(emp_ages, emp_taxa))
