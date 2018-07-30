@@ -220,7 +220,40 @@ ggarrange(gg3, gg4,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-# THE GRAPH
+# Temporal trends
+trend<-readRDS("output/Trends_pc.rds")
+round(colMeans(trend[,2:5], na.rm = T),3)
+apply(trend[,2:5],2, min, na.rm=T)
+
+th1<-ggplot(trend, aes(x=Origination)) + geom_histogram(color="darkblue", fill="white") + 
+  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="", x="Spearman's rho", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(-1, 1), y=c(0, 10)), aes(x, y)) 
+
+th2<-ggplot(trend, aes(x=Extinction)) + geom_histogram(color="darkblue", fill="white") + 
+  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="", x="Spearman's rho", y = "") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(-1, 1), y=c(0, 10)), aes(x, y)) 
+
+th3<-ggplot(trend, aes(x=p.value.ori)) + geom_histogram(color="darkblue", fill="white") + 
+  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="", x="Spearman's rho", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(0, 1), y=c(0, 10)), aes(x, y)) 
+
+th4<-ggplot(trend, aes(x=p.value.ext)) + geom_histogram(color="darkblue", fill="white") + 
+  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
+  labs(title="", x="Spearman's rho", y = "") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe(data=data.frame(x=c(0, 1), y=c(0, 10)), aes(x, y)) 
+
+ggarrange(th1, th2, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+ggarrange(th3, th4, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+# THE GRAPH ####
 ggarrange(gg1, gg2, gg3, gg4, 
           labels = c("A", "B", "C", "D"),
           ncol = 2, nrow = 2)
