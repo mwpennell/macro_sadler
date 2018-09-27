@@ -235,7 +235,6 @@ th2<-ggplot(trend, aes(x=Extinction)) + geom_histogram(color="darkblue", fill="w
   labs(title="", x="Spearman's rho", y = "") + theme_tufte(base_family = "Helvetica") + 
   geom_rangeframe(data=data.frame(x=c(-1, 1), y=c(0, 10)), aes(x, y)) 
 
-<<<<<<< HEAD
 th3<-ggplot(trend, aes(x=p.value.ori)) + geom_histogram(color="darkblue", fill="white") + 
   #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
   labs(title="", x="Spearman's rho", y = "Count") + theme_tufte(base_family = "Helvetica") + 
@@ -246,19 +245,18 @@ th4<-ggplot(trend, aes(x=p.value.ext)) + geom_histogram(color="darkblue", fill="
   labs(title="", x="Spearman's rho", y = "") + theme_tufte(base_family = "Helvetica") + 
   geom_rangeframe(data=data.frame(x=c(0, 1), y=c(0, 10)), aes(x, y)) 
 
-=======
->>>>>>> 0ff4aa153391cb615be78665f2655e409aa877c0
 ggarrange(th1, th2, 
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-<<<<<<< HEAD
 ggarrange(th3, th4, 
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-=======
->>>>>>> 0ff4aa153391cb615be78665f2655e409aa877c0
+par(mfrow=c(1,2))
+visreg::visreg(lm(log(median.clade.origination)~log(Duration),data=summary_paleo_results), xlab="Duration (My)", ylab="Median origination (Species per My)")
+visreg::visreg(lm(log(median.clade.origination)~log(Duration),data=summary_paleo_results), xlab="Duration (My)", ylab="Median extinction (Species per My)")
+
 # THE GRAPH ####
 ggarrange(gg1, gg2, gg3, gg4, 
           labels = c("A", "B", "C", "D"),
