@@ -80,13 +80,11 @@ ph1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) +
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
 ph1.1<-ggplot(summary_tree_results, aes(x=(tree.max.age),y=(mean.clade.lambda))) + 
-  geom_point(aes(size=n.clade,colour=gamma.stat),show.legend = F) + theme_cowplot() + 
-  labs(x="Clade age (Myr)", y=expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")) + 
-  theme(axis.title = element_text(size=15)) + 
-  geom_smooth(method='glm',method.args=list(family="Gamma"), se=T,alpha=.15) + 
-  scale_size_continuous(name = "Clade\nrichness") + 
-  scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + 
-  guides(size = guide_legend(order=1))
+  geom_point(show.legend = F, colour= "#0E233E", size=2) + theme_cowplot() + 
+  labs(x="Clade age (Myr)", y=expression(paste("Speciation (species ", Myr^-1,")"),sep=" ")) + 
+  theme(axis.title = element_text(size=15)) + geom_smooth(method = 'nls', formula = y~a*x^b, method.args = list(start = c(a=1,b=2)), se=F, na.rm = T, colour="#EA3770", size=1.5) + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe() + theme(axis.title = element_text(size=15)) +
+  geom_rangeframe(data=data.frame(x=c(0, 500), y=c(0, .4)), aes(x, y))
 
 ph2<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
   geom_point(aes(size=n.clade,colour=gamma.stat)) + theme_cowplot() + 
@@ -111,10 +109,14 @@ ph4<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.mu)))
   scale_colour_gradientn(name="Gamma\nstatistic",colours = rev(brewer.pal(4,"Spectral"))) + guides(size = guide_legend(order=1))
 
 l.inset<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.lambda))) + 
-  geom_point() + theme_cowplot() + labs(x="", y="") +
-  #labs(x="Ln clade age (Myr)", y=express) +
-  theme(axis.title = element_text(size=10)) + 
-  geom_smooth(method=lm, se=F,alpha=.1)
+  geom_point(colour= "#0E233E") + theme_cowplot() + labs(x="", y="") + 
+  scale_x_continuous(breaks= c(1,3.5,6), labels=as.character(round(exp(c(1,3.5,6)),0))) +
+  scale_y_continuous(breaks= c(-3.5,-1.5,0), labels=as.character(round(exp(c(-3.5,-1.5,0)),2))) +
+  # labs(x="Ln clade age (Myr)", y=express) +
+  theme(axis.title = element_text(size=10), axis.text.x = element_text(size=10), axis.text.y = element_text(size=10)) + 
+  geom_smooth(method=lm, se=T,alpha=.1,colour="#EA3770") + theme_tufte(base_family = "Helvetica") + 
+  geom_rangeframe() + theme(axis.title = element_text(size=15)) +
+  geom_rangeframe(data=data.frame(x=c(1, 6), y=c(-3.5, 0)), aes(x, y))
 
 m.inset<-ggplot(summary_tree_results, aes(x=log(tree.max.age),y=log(mean.clade.mu))) + 
   geom_point() + theme_cowplot() + labs(x="", y="") +
@@ -268,10 +270,10 @@ express1<-expression(paste("Mean origination (species ", Myr^-1,")"),sep=" ")
 
 h1<-ggplot(summary_tree_results, aes(x=mean.clade.lambda)) + geom_histogram(color="darkblue", fill="white") + 
   labs(title="",x=express, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
-  theme(axis.title = element_text(size=12)) + geom_rangeframe(data=data.frame(x=c(0, 1.6), y=c(0, 30)), aes(x, y))
+  theme(axis.title = element_text(size=15)) + geom_rangeframe(data=data.frame(x=c(0, 1.6), y=c(0, 30)), aes(x, y))
 
 h2<-ggplot(summary_paleo_results, aes(x=mean.clade.origination)) + geom_histogram(color="darkblue", fill="white") +       labs(title="",x=express1, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
-  theme(axis.title = element_text(size=12)) + geom_rangeframe(data=data.frame(x=c(0, 0.5), y=c(0, 20)), aes(x, y))
+  theme(axis.title = element_text(size=1)) + geom_rangeframe(data=data.frame(x=c(0, 0.5), y=c(0, 20)), aes(x, y))
 
 ggarrange(h1, h2, 
           labels = c("A", "B"),
