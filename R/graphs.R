@@ -132,7 +132,6 @@ ggarrange(gg1, gg2,
           ncol = 2, nrow = 1)
 
 # Null trees (push of the past)
-
 empirical_bd_slope<-readRDS("null_trees/empirical/output/tree_bd_slope.rds")
 m50_bd_slope<-readRDS("null_trees/mu50/output/tree_bd_slope.rds")
 m75_bd_slope<-readRDS("null_trees/mu75/output/tree_bd_slope.rds")
@@ -265,15 +264,17 @@ ggarrange(gg1, gg2, gg3, gg4,
           ncol = 2, nrow = 2)
 
 #### ####
+#Speciation -Origination rates histograms
 express<-expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")
 express1<-expression(paste("Mean origination (species ", Myr^-1,")"),sep=" ")
 
-h1<-ggplot(summary_tree_results, aes(x=mean.clade.lambda)) + geom_histogram(color="darkblue", fill="white") + 
+h1<-ggplot(summary_tree_results, aes(x=mean.clade.lambda)) + geom_histogram(colour="#0E233E", fill="white") + 
   labs(title="",x=express, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
   theme(axis.title = element_text(size=15)) + geom_rangeframe(data=data.frame(x=c(0, 1.6), y=c(0, 30)), aes(x, y))
 
-h2<-ggplot(summary_paleo_results, aes(x=mean.clade.origination)) + geom_histogram(color="darkblue", fill="white") +       labs(title="",x=express1, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
-  theme(axis.title = element_text(size=1)) + geom_rangeframe(data=data.frame(x=c(0, 0.5), y=c(0, 20)), aes(x, y))
+h2<-ggplot(summary_paleo_results, aes(x=mean.clade.origination)) + geom_histogram(colour="#0E233E", fill="white") + 
+  labs(title="",x=express1, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
+  theme(axis.title = element_text(size=15)) + geom_rangeframe(data=data.frame(x=c(0, 0.5), y=c(0, 20)), aes(x, y))
 
 ggarrange(h1, h2, 
           labels = c("A", "B"),
