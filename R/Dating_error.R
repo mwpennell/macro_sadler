@@ -83,7 +83,7 @@ tree_bd_slope <- function(pars, taxa = NULL, time = NULL, error, min.taxa = 10, 
 
 ## filter so only look at trees with more than 10 tips
 error <- seq(0.1, 0.9, length.out = 9)
-Nreps <- 10
+Nreps <- 1000
 # Ntips
 d_10 <- filter(d, ntips > 10)
 ntips <- as.numeric(d_10$ntips)
@@ -101,22 +101,22 @@ for (j in 1:length(error)){
 
 ## plot distribution of recovered slopes (due to dating bias) and include empirical slope
 h1<-ggplot(slopes_taxa, aes(x = `0.1`)) + geom_histogram(color="yellow4", fill="white") + 
-  labs(title="Error ~ 0.1", x="Slope estimates", y = "Count") + 
+  labs(title="Error ~ 0.1", x="Slope estimates", y = "") + 
   geom_vline(xintercept=-0.5, color="red", linetype="dashed", size=1) +
-  theme_tufte(base_family = "Helvetica") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(emp_taxa, 0), y=c(0, 150)), aes(x, y)) 
 
 h2<-ggplot(slopes_taxa, aes(x = `0.5`)) + geom_histogram(color="yellow4", fill="white") + 
   labs(title="Error ~ 0.5", x="Slope estimates", y = "") + 
   geom_vline(xintercept=-0.5, color="red", linetype="dashed", size=1) +
-  theme_tufte(base_family = "Helvetica") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(emp_taxa, max(slopes_taxa$`0.5`)), y=c(0, 200)), aes(x, y)) 
   
 h3<-ggplot(slopes_taxa, aes(x = `0.9`)) + geom_histogram(color="yellow4", fill="white") + 
   labs(title="Error ~ 0.9", x="Slope estimates", y = "") + 
   geom_vline(xintercept=-0.5, color="red", linetype="dashed", size=1) +
-  theme_tufte(base_family = "Helvetica") + 
-  geom_rangeframe(data=data.frame(x=c(emp_taxa, max(slopes_taxa$`0.9`)), y=c(0, 225)), aes(x, y)) 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
+  geom_rangeframe(data=data.frame(x=c(emp_taxa, max(slopes_taxa$`0.9`)), y=c(0, 300)), aes(x, y)) 
 
 ggarrange(h1, h2, h3,   
           labels = c("A", "B","C"),
