@@ -54,15 +54,13 @@ ggarrange(g1, g2, g3,
 # Number of shifts
 ss<-filter(summary_tree_results,summary_tree_results$best.n.shifts>=1)
 hh1<-ggplot(ss, aes(x=best.n.shifts)) + geom_histogram(color="darkblue", fill="white") + 
-  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="", x="Number of Shifts", y = "Count") + theme_tufte(base_family = "Helvetica") + 
-  geom_rangeframe(data=data.frame(x=c(0, 20), y=c(0, 25)), aes(x, y)) 
+  labs(title="", x="Number of Shifts", y = "") + theme_tufte(base_family = "Helvetica", base_size = 14) +
+  geom_rangeframe(data=data.frame(x=c(0, 20), y=c(0, 80)), aes(x, y)) 
 
 hh2<-ggplot(ss, aes(x=best.n.shifts/tree.max.age)) + geom_histogram(color="darkblue", fill="white") + 
-  #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="",y = "Count", x=expression(paste("Number of Shifts per ", Myr^-1),sep=" "), y = "") + 
-  theme_tufte(base_family = "Helvetica") + 
-  geom_rangeframe(data=data.frame(x=c(0, .25), y=c(0, 7.5)), aes(x, y)) 
+  labs(title="",y = "", x=expression(paste("Number of Shifts per ", Myr^-1),sep=" "), y = "") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
+  geom_rangeframe(data=data.frame(x=c(0, .4), y=c(0, 50)), aes(x, y)) 
 
 ggarrange(hh1, hh2,   
           labels = c("A", "B"),
@@ -139,17 +137,20 @@ null_bd_slope<-data.frame(empirical_bd_slope,m50_bd_slope,m75_bd_slope)
 
 h1<-ggplot(null_bd_slope, aes(x=empirical_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
   geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="Empirical parameters", x="Slope", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  labs(title="Empirical parameters", x="Slope", y = "") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$empirical_bd_slope)), y=c(0, 150)), aes(x, y)) 
 
 h2<-ggplot(null_bd_slope, aes(x=m50_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
   geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="mu = 0.5 x Lambda",x="Slope", y = "") + theme_tufte(base_family = "Helvetica") + 
+  labs(title="mu = 0.5 x Lambda",x="Slope", y = "") +
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$m50_bd_slope)), y=c(0, 155)), aes(x, y)) 
 
 h3<-ggplot(null_bd_slope, aes(x=m75_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
   geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="mu = 0.75 x Lambda",x="Slope", y = "") + theme_tufte(base_family = "Helvetica") + 
+  labs(title="mu = 0.75 x Lambda",x="Slope", y = "") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$m75_bd_slope)), y=c(0, 130)), aes(x, y)) 
 
 ggarrange(h1, h2, h3, 
@@ -228,17 +229,19 @@ apply(trend[,2:5],2, min, na.rm=T)
 
 th1<-ggplot(trend, aes(x=Origination)) + geom_histogram(color="darkblue", fill="white") + 
   #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="", x="Spearman's rho", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  labs(title="", x="Spearman's rho", y = "") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(-1, 1), y=c(0, 10)), aes(x, y)) 
 
 th2<-ggplot(trend, aes(x=Extinction)) + geom_histogram(color="darkblue", fill="white") + 
   #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="", x="Spearman's rho", y = "") + theme_tufte(base_family = "Helvetica") + 
+  labs(title="", x="Spearman's rho", y = "") + 
+  theme_tufte(base_family = "Helvetica", base_size = 14) + 
   geom_rangeframe(data=data.frame(x=c(-1, 1), y=c(0, 10)), aes(x, y)) 
 
 th3<-ggplot(trend, aes(x=p.value.ori)) + geom_histogram(color="darkblue", fill="white") + 
   #geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
-  labs(title="", x="Spearman's rho", y = "Count") + theme_tufte(base_family = "Helvetica") + 
+  labs(title="", x="Spearman's rho", y = "") + theme_tufte(base_family = "Helvetica") + 
   geom_rangeframe(data=data.frame(x=c(0, 1), y=c(0, 10)), aes(x, y)) 
 
 th4<-ggplot(trend, aes(x=p.value.ext)) + geom_histogram(color="darkblue", fill="white") + 
@@ -264,20 +267,45 @@ ggarrange(gg1, gg2, gg3, gg4,
           ncol = 2, nrow = 2)
 
 #### ####
-#Speciation -Origination rates histograms
+#Speciation - Origination rates histograms
 express<-expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")
-express1<-expression(paste("Mean origination (species ", Myr^-1,")"),sep=" ")
+express1<-expression(paste("Mean origination (genera ", Myr^-1,")"),sep=" ")
 
-h1<-ggplot(summary_tree_results, aes(x=mean.clade.lambda)) + geom_histogram(colour="#0E233E", fill="white") + 
-  labs(title="",x=express, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
-  theme(axis.title = element_text(size=15)) + geom_rangeframe(data=data.frame(x=c(0, 1.6), y=c(0, 30)), aes(x, y))
+h1<-ggplot(summary_tree_results, aes(x=mean.clade.lambda)) +
+  geom_histogram(colour="#0E233E", fill="white") + 
+  labs(title="",x=express, y = "") + theme_tufte(base_family = "Helvetica", base_size = 14) +
+  geom_rangeframe() + theme(axis.title = element_text(size=15)) +
+  geom_rangeframe(data=data.frame(x=c(0, 1.6), y=c(0, 30)), aes(x, y))
 
-h2<-ggplot(summary_paleo_results, aes(x=mean.clade.origination)) + geom_histogram(colour="#0E233E", fill="white") + 
-  labs(title="",x=express1, y = "Count") + theme_tufte(base_family = "Helvetica") + geom_rangeframe() + 
-  theme(axis.title = element_text(size=15)) + geom_rangeframe(data=data.frame(x=c(0, 0.5), y=c(0, 20)), aes(x, y))
+h2<-ggplot(summary_paleo_results, aes(x=mean.clade.origination)) +
+  geom_histogram(colour="#0E233E", fill="white") + 
+  labs(title="",x=express1, y = "") + theme_tufte(base_family = "Helvetica", base_size = 14) + 
+  geom_rangeframe() + theme(axis.title = element_text(size=15)) + 
+  geom_rangeframe(data=data.frame(x=c(0, 0.5), y=c(0, 20)), aes(x, y))
 
 ggarrange(h1, h2, 
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
+#Extinction rates histograms
+e.express<-expression(paste("Mean ", mu, " (species ", Myr^-1,")"),sep=" ")
+e.express1<-expression(paste("Mean extinction (genera ", Myr^-1,")"),sep=" ")
+
+hh1<-ggplot(summary_tree_results, aes(x=mean.clade.mu)) + 
+  geom_histogram(colour="#0E233E", fill="white") + 
+  labs(title="",x=e.express, y = "") + theme_tufte(base_family = "Helvetica",  base_size = 14) + 
+  geom_rangeframe() + 
+  theme(axis.title = element_text(size=15)) + 
+  geom_rangeframe(data=data.frame(x=c(0, 1), y=c(0, 30)), aes(x, y))
+
+hh2<-ggplot(summary_paleo_results, aes(x=mean.clade.mu)) + 
+  geom_histogram(colour="#0E233E", fill="white") + 
+  labs(title="",x=e.express1, y = "") + theme_tufte(base_family = "Helvetica",  base_size = 14) +
+  geom_rangeframe() + 
+  theme(axis.title = element_text(size=15)) + 
+  geom_rangeframe(data=data.frame(x=c(0, 1), y=c(0, 30)), aes(x, y))
+
+ggarrange(hh1, hh2, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
 #### ####
