@@ -120,6 +120,3 @@ ggplot(df, aes(x = value)) + geom_histogram(bins = 100) + theme_bw() +
   xlab("slope estimates") + 
   geom_vline(data = vline.df, aes(xintercept = value), color="red") +
   facet_grid(. ~ cond)
-
-
-
