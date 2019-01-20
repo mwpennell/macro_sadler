@@ -139,23 +139,23 @@ h1<-ggplot(null_bd_slope, aes(x=empirical_bd_slope)) + geom_histogram(color="dar
   geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
   labs(title="Empirical parameters", x="Slope", y = "") + 
   theme_tufte(base_family = "Helvetica", base_size = 14) + 
-  geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$empirical_bd_slope)), y=c(0, 150)), aes(x, y)) 
+  geom_rangeframe(data=data.frame(x=c(-0.436, .1), y=c(0, 150)), aes(x, y)) 
 
 h2<-ggplot(null_bd_slope, aes(x=m50_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
   geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
   labs(title="mu = 0.5 x Lambda",x="Slope", y = "") +
   theme_tufte(base_family = "Helvetica", base_size = 14) + 
-  geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$m50_bd_slope)), y=c(0, 155)), aes(x, y)) 
+  geom_rangeframe(data=data.frame(x=c(-0.436, .1), y=c(0, 155)), aes(x, y)) 
 
 h3<-ggplot(null_bd_slope, aes(x=m75_bd_slope)) + geom_histogram(color="darkblue", fill="white") + 
   geom_vline(aes(xintercept=-0.436),color="red", linetype="dashed", size=1) + 
   labs(title="mu = 0.75 x Lambda",x="Slope", y = "") + 
   theme_tufte(base_family = "Helvetica", base_size = 14) + 
-  geom_rangeframe(data=data.frame(x=c(-0.436, max(null_bd_slope$m75_bd_slope)), y=c(0, 130)), aes(x, y)) 
+  geom_rangeframe(data=data.frame(x=c(-0.436, .1), y=c(0, 130)), aes(x, y)) 
 
-ggarrange(h1, h2, h3, 
-          labels = c("A", "B", "C"),
-          ncol = 3, nrow = 1)
+ggarrange(h1, h2, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
 
 #### Fossils ####
 summary_paleo_results<-read.delim("output/summary_paleo_results.csv", sep = ",", dec=".")
