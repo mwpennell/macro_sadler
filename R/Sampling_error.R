@@ -57,40 +57,29 @@ z.phylo$node.label<-NULL
 
 source('R/ml_reg_stats_age_subtrees.R', chdir = TRUE)
 
-j.ml.chop<-ml_reg_stats_age_subtrees(j.phylo,j.ages,tolerance=10,N=100)
-z.ml.chop<-ml_reg_stats_age_subtrees(z.phylo,z.ages,tolerance=10,N=100)
+j.ml.chop<-ml_reg_stats_age_subtrees(j.phylo,j.ages,tolerance=10,N=1000)
+z.ml.chop<-ml_reg_stats_age_subtrees(z.phylo,z.ages,tolerance=10,N=1000)
+t.ml.chop<-ml_reg_stats_age_subtrees(t.phylo,t.ages,tolerance=10,N=1000)
 
-par(mfrow=c(1,2))
-hist(j.ml.chop$lm.slope, main="Bird families",xlab = "Slope")
-abline(v=coefficients(lm(j.ml$l.lambda~j.ml$clade.age))[2], col="red")
-coefficients(lm(j.ml$l.lambda~j.ml$clade.age))[2]
+## Figure 4. Random clade selection effect
+h1<-ggplot(j.ml.chop, aes(x=lm.slope)) + geom_histogram(colour= "#0E233E", fill="white") + 
+  geom_vline(aes(xintercept=-0.436), colour="#EA3770", linetype="dashed", size=1) + 
+  labs(title="", x="Slope", y = "") +
+  theme_tufte(base_family = "Helvetica", base_size = 15) + 
+  geom_rangeframe(data=data.frame(x=c(-3, 1), y=c(0, 300)), aes(x, y)) 
 
-hist(z.ml.chop$lm.slope, main="Plant orders",xlab = "Slope")
-abline(v=coefficients(lm(z.ml$l.lambda~z.ml$clade.age))[2], col="red")
-coefficients(lm(z.ml$l.lambda~z.ml$clade.age))[2]
+h2<-ggplot(z.ml.chop, aes(x=lm.slope)) + geom_histogram(color="#0E233E", fill="white") + 
+  geom_vline(aes(xintercept=-0.436),color="#EA3770", linetype="dashed", size=1) + 
+  labs(title="",x="Slope", y = "") + theme_tufte(base_family = "Helvetica", base_size = 15) +
+  geom_rangeframe(data=data.frame(x=c(-3, 1), y=c(0, 150)), aes(x, y)) 
 
-##
-tree_metrics=function(tt){
-  phylogs<-c()
-  ntips<-c()
-  tree.min.age<-c()
-  tree.max.age<-c()
-  gamma.stat<-c()
-  trees.metrics<-c()
-  for (i in 1:length(tt)){
-    phylogs<-tt[[i]]
-    ntips[i]<-Ntip(phylogs)
-    tree.min.age[i]<-min(branching.times(phylogs))
-    tree.max.age[i]<-max(branching.times(phylogs))
-    gamma.stat[i]<-gammaStat(phylogs)
-    trees.metrics<-data.frame(ntips,tree.min.age,tree.max.age,gamma.stat)
-  }  
-  return(trees.metrics)
-}
+h3<-ggplot(t.ml.chop, aes(x=lm.slope)) + geom_histogram(color="#0E233E", fill="white") + 
+  geom_vline(aes(xintercept=-0.436),color="#EA3770", linetype="dashed", size=1) + 
+  labs(title="",x="Slope", y = "") + theme_tufte(base_family = "Helvetica", base_size = 15) +
+  geom_rangeframe(data=data.frame(x=c(-2, 1), y=c(0, 150)), aes(x, y)) 
 
-j.t.metrics<-tree_metrics(j.phylos)
-z.t.metrics<-tree_metrics(z.phylos)
-
-par(mfrow=c(1,2))
-hist(j.t.metrics$tree.max.age,main="Bird families",xlab="Ages")
-hist(z.t.metrics$tree.max.age,main="Plant orders",xlab="Ages")
+ggarrange(h1, h2, h3, 
+          labels = c("A", "B", "C"),
+          font.label = list(font.label = 20),
+          ncol = 3, nrow = 1)
+ 
