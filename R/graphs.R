@@ -227,7 +227,7 @@ ggarrange(th3, th4,
           labels = c("A", "B"),
           ncol = 2, nrow = 1)
 
-#### ####
+#### Figures ####
 #Fig. 1 Speciation - Origination rates histograms
 express<-expression(paste("Mean ", lambda, " (species ", Myr^-1,")"),sep=" ")
 express1<-expression(paste("Mean origination (genera ", Myr^-1,")"),sep=" ")
